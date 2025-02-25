@@ -56,7 +56,7 @@ if not st.session_state.logged_in:
     username = st.sidebar.text_input("Username")
     password = st.sidebar.text_input("Password", type="password")
     if st.sidebar.button("Login"):
-        if username == "admin" and password == "password":
+        if username == "Rohit" and password == "Sharma":
             st.session_state.logged_in = True
             st.sidebar.success("Logged in successfully!")
         else:
@@ -96,6 +96,13 @@ if st.session_state.logged_in:
         col2.metric("Average PM2.5", round(filtered_df['PM2.5'].mean(), 2))
         col3.metric("Average PM10", round(filtered_df['PM10'].mean(), 2))
         col4.metric("PM2.5/PM10 Ratio", round(filtered_df['PM2.5/PM10 Ratio'].mean(), 2))
+
+        # Power BI Dashboard Integration
+        st.subheader("📊 Power BI Dashboard")
+        power_bi_url = "https://app.powerbi.com/view?r=eyJrIjoiZmI5ZmE4ZDctNmJiOC00MjhhLWI2N2YtYWVhOTFhYzc1ZTljIiwidCI6ImYzN2Q3OTFlLWRkMDctNDZjYS1iYzI5LTUwNzIzNTgwMWVmMyJ9"
+        
+        with st.expander("View Power BI Dashboard"):
+            st.components.v1.iframe(power_bi_url, width=1200, height=700, scrolling=True)
 
         # Charts Section
         st.subheader("Visualizations")
