@@ -11,7 +11,7 @@ st.set_page_config(page_title="Air Quality Dashboard", layout="wide")
 # Load Data from Uploaded File
 @st.cache_data
 def load_data():
-    df = pd.read_csv("https://github.com/rohitshaarma13/Air-Quality-Index-Visualization/blob/main/StreamLit/Air_Quality_Data.csv")
+    df = pd.read_csv("StreamLit/Air_Quality_Data.csv")
     df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y', errors='coerce')
     return df
 
