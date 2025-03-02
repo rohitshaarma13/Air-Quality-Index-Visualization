@@ -2,4 +2,5 @@ pandas==2.2.3
 plotly==5.22.0
 streamlit==1.42.1
 matplotlib==3.10.0
-seaborn==2.2.3
+seaborn==0.13.2
+
