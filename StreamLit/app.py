@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
 import seaborn as sns
+import random
 
 # ✅ Ensure `st.set_page_config()` is the first Streamlit command
 st.set_page_config(page_title="Air Quality Dashboard", layout="wide")
@@ -18,7 +19,7 @@ df = load_data()
 
 # Sidebar - Navigation
 st.sidebar.title("Navigation")
-menu = st.sidebar.radio("Go to", ["Home", "Dashboard", "Dataset", "About", "Settings","Feedback"])
+menu = st.sidebar.radio("Go to", ["Home", "Dashboard", "Dataset", "About","Quiz", "Settings","Get In Touch"])
 
 # Dummy Authentication
 if "logged_in" not in st.session_state:
@@ -233,25 +234,72 @@ if st.session_state.logged_in:
     """)
 
         st.success("This dashboard is a step towards raising awareness and encouraging action for cleaner air! 🌱")
+    elif menu == "Quiz":
+        st.title("Air Quality Quiz")
 
-    elif menu == "Feedback":
-        st.title("💬 Feedback & Suggestions")
+    # Store quiz score in session state
+        if "score" not in st.session_state:
+            st.session_state.score = 0
+        if "answered_questions" not in st.session_state:
+            st.session_state.answered_questions = set()
 
-        st.write("We value your feedback! Please share your thoughts, suggestions, or report any issues with the dashboard.")
+        quiz_questions = [
+           {"question": "Which pollutant is the primary contributor to the formation of acid rain?",
+            "options": ["Carbon Monoxide (CO)", "Sulfur Dioxide (SO₂)", "Ozone (O₃)", "Lead (Pb)"],
+            "answer": "Sulfur Dioxide (SO₂)"},
+           {"question": "What is the full form of PM2.5 in air quality measurements?",
+            "options": ["Particulate Matter less than 2.5 millimeters", "Particulate Material of 2.5 density",
+            "Particulate Matter smaller than 2.5 micrometers", "Pollution Mass at 2.5 meters"],
+            "answer": "Particulate Matter smaller than 2.5 micrometers"},
+           {"question": "Which of the following gases has the highest Global Warming Potential (GWP) over 100 years?",
+            "options": ["Carbon Dioxide (CO₂)", "Methane (CH₄)", "Nitrous Oxide (N₂O)", "Sulfur Hexafluoride (SF₆)"],
+            "answer": "Sulfur Hexafluoride (SF₆)"},
+           {"question": "What is the primary reason that ground-level ozone (O₃) is harmful to human health?",
+            "options": ["It directly causes global warming", "It reacts with lung tissues and causes respiratory issues",
+            "It blocks UV radiation, reducing Vitamin D synthesis", "It enhances oxygen levels in polluted areas"],
+            "answer": "It reacts with lung tissues and causes respiratory issues"},
+           {"question": "Which air pollutant is responsible for smog formation in urban areas?",
+            "options": ["Carbon Monoxide (CO)", "Particulate Matter (PM10)", "Nitrogen Oxides (NOₓ)", "Ozone (O₃)"],
+            "answer": "Nitrogen Oxides (NOₓ)"},
+           {"question": "What is the major source of Volatile Organic Compounds (VOCs) in urban environments?",
+            "options": ["Vehicle emissions and industrial processes", "Agricultural crop burning", "Forest wildfires", "Indoor cooking activities"],
+            "answer": "Vehicle emissions and industrial processes"},
+           {"question": "What is the main reason AQI values are generally worse in winter?",
+            "options": ["Higher temperature increases pollutant reaction rates", "Air inversion traps pollutants near the surface",
+            "Increased levels of ultraviolet (UV) radiation", "Trees absorb fewer pollutants during winter"],
+            "answer": "Air inversion traps pollutants near the surface"},
+           {"question": "Which of the following air pollutants is NOT a direct greenhouse gas?",
+            "options": ["Carbon Dioxide (CO₂)", "Methane (CH₄)", "Nitrogen Oxides (NOₓ)", "Sulfur Hexafluoride (SF₆)"],
+            "answer": "Nitrogen Oxides (NOₓ)"},
+           {"question": "What is the primary cause of indoor air pollution in developing countries?",
+            "options": ["Poor ventilation in high-rise buildings", "Burning biomass fuels (wood, charcoal, cow dung)",
+            "Air conditioning and refrigeration leaks", "Electronic waste emissions"],
+            "answer": "Burning biomass fuels (wood, charcoal, cow dung)"},
+           {"question": "Which air pollutant is known to have the strongest link to lung cancer?",
+            "options": ["Ozone (O₃)", "PM2.5", "Nitrogen Dioxide (NO₂)", "Carbon Monoxide (CO)"],
+            "answer": "PM2.5"},
+           ]
 
-    # User Input Fields
-        name = st.text_input("Your Name (Optional)")
-        email = st.text_input("Your Email (Optional)")
-        feedback_type = st.selectbox("Feedback Type", ["Suggestion", "Issue", "General Feedback"])
-        feedback_text = st.text_area("Your Feedback", placeholder="Write your feedback here...")
+        for i, q in enumerate(quiz_questions):
+            st.subheader(f"Question {i+1}: {q['question']}")
+            choice = st.radio("Select your answer:", q['options'], key=f"q{i}")
 
-    # Submit Button
-        if  st.button("Submit Feedback"):
-          if feedback_text:
-            st.success("Thank you for your feedback! We appreciate your time and effort. 🙌")
-            # Here, you can implement functionality to save/store feedback (e.g., in a database or CSV file)
-        else:
-            st.warning("Please enter your feedback before submitting.")
+            if st.button(f"Submit Answer {i+1}", key=f"btn{i}"):
+              if i not in st.session_state.answered_questions:
+                st.session_state.answered_questions.add(i)  # Mark question as answered
+                if choice == q['answer']:
+                    st.session_state.score += 1
+                    st.success("Correct! ✅")
+                else:
+                    st.error(f"Wrong! ❌ The correct answer is {q['answer']}")
+
+        st.write("### Final Score: ", st.session_state.score, f"/ {len(quiz_questions)}")
+
+        if st.button("Restart Quiz"):
+           st.session_state.score = 0
+           st.session_state.answered_questions = set()
+           st.rerun()
+
 
     elif menu == "Settings":
         st.title("⚙️ Settings")
@@ -263,5 +311,45 @@ if st.session_state.logged_in:
         if st.button("Logout"):
             st.session_state.logged_in = False
             st.rerun()
+    # Contact Form with CSS Styling
+    elif menu == "Get In Touch":
+        st.title("📞 Get In Touch")
+
+        contact_form = """
+    <style>
+        .contact-form input, .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .contact-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .contact-form button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <form class="contact-form" action="https://formsubmit.co/sharmarohits814@gmail.com" method="POST">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="email" name="email" placeholder="Your Email" required>
+        <textarea name="message" placeholder="Your Message" rows="4" required></textarea>
+        <button type="submit">Send</button>
+    </form>
+    """
+        st.markdown(contact_form, unsafe_allow_html=True)
+
+    # Footer
+        st.write("---")
+        st.write("Thanks for visiting! Feel free to connect with me.")
+
 else:
     st.warning("Please log in to access the dashboard.")
+    
